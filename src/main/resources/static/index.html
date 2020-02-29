@@ -1,0 +1,110 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>秒杀商品系统</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+    <link href="main/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="main-wrapper">
+    <div class="content-body" style="margin: 0 auto">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card transparent-card">
+                        <div class="card-header pb-0">
+                            <h4 class="card-title mt-2"> 商品列表</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-padded recent-order-list-table table-responsive-fix-big">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>商品</th>
+                                        <th>Spike StartTime</th>
+                                        <th>Spike EndTime</th>
+                                        <th>Time Limit</th>
+                                        <th>库存</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/plugins/common/common.min.js"></script>
+<script src="main/js/custom.min.js"></script>
+<script src="main/js/settings.js"></script>
+<script src="main/js/gleek.js"></script>
+<script src="main/js/styleSwitcher.js"></script>
+
+<!-- Chartjs chart -->
+<script src="assets/plugins/chart.js/Chart.bundle.min.js"></script>
+<script src="assets/plugins/d3v3/index.js"></script>
+<script src="assets/plugins/topojson/topojson.min.js"></script>
+<script src="assets/plugins/datamaps/datamaps.world.min.js"></script>
+
+<script src="main/js/plugins-init/datamap-world-init.js"></script>
+
+<script src="assets/plugins/datamaps/datamaps.usa.min.js"></script>
+
+<script src="main/js/dashboard/dashboard-1.js"></script>
+
+<script src="main/js/plugins-init/datamap-usa-init.js"></script>
+<script src="main/js/jquery-3.4.1.min.js"></script>
+<script>
+    $(function () {
+        var tbody = $("table tbody");
+        $.ajax({
+            url: '/spike-goods/getAll',
+            method: 'get',
+            success: function (data) {
+                console.log(data);
+                tbody.find("tr").remove();
+                $.each(data, function (index, value) {
+                    var $tr = $("<tr></tr>");
+                    var $td_idx = $("<td>" + (index + 1) + "</td>");
+                    var $td_goodsName = $("<td>" + value.goodsName + "</td>");
+                    var $td_startTime = $("<td>" + value.startTime + "</td>");
+                    var $td_endTime = $("<td>" + value.endTime + "</td>");
+                    var $td_timeLimit = $("<td class='ttl'>" + value.timeLimit + "</td>");
+                    var $td_stock = $("<td>" + value.stock + "</td>")
+                    var $td_operate = $("<td><span class='label label-xl label-rounded label-warning spike' gId='" + value.goodsId + "'>秒杀</span></td>")
+                    $tr.append($td_idx);
+                    $tr.append($td_goodsName);
+                    $tr.append($td_startTime);
+                    $tr.append($td_endTime);
+                    $tr.append($td_timeLimit);
+                    $tr.append($td_stock);
+                    $tr.append($td_operate);
+                    tbody.append($tr);
+                    //定时器刷新剩余时间
+                    var timer = setInterval(function () {
+                        var ttls = $('.ttl');
+                        $.each(ttls, function (idx, val) {
+                            var ttl = $(val).text();
+                            $(val).text(parseInt(ttl) - 1);
+                        })
+                    }, 1000);
+                });
+            }
+        })
+    });
+    $(document).delegate('.spike', 'click', function () {
+        var gid = $(this).attr('gid');
+        window.location.href="/spike.html?goodsId="+gid;
+    });
+</script>
+</body>
+</html>
