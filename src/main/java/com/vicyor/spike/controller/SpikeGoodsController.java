@@ -5,6 +5,7 @@ import com.vicyor.spike.service.SpikeGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -24,5 +25,10 @@ public class SpikeGoodsController {
     @ResponseBody
     public List<SpikeGoods> getAllSpikeGoods() {
         return spikeGoodsService.getAllSpikeGoods();
+    }
+    @GetMapping("/getSpikeGoods/{spikeGoodsId}")
+    @ResponseBody
+    public SpikeGoods getSpikeGoods(@PathVariable("spikeGoodsId")Long spikeGoodsId){
+        return spikeGoodsService.getSpikeGoodsBySpikeGoodsId(spikeGoodsId);
     }
 }

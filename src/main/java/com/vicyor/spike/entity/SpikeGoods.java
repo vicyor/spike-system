@@ -29,4 +29,7 @@ public class SpikeGoods {
     private Timestamp endTime;
     @Transient
     private Long timeLimit;
+    @Column(name = "stock_all")
+    private Long stockAll;
+    private int status;
 }

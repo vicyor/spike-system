@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>秒杀商品系统</title>
+    <title>秒杀商品系统管理页面</title>
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
     <link href="main/css/style.css" rel="stylesheet">
 </head>
@@ -23,7 +23,7 @@
                                         <div class="col-sm-9">
                                             <div class="input-group mb-3">
                                                 <input type="text" class="form-control" name="goodsName"
-                                                       value="恰恰牌瓜子" readonly="readonly">
+                                                       value="" readonly="readonly">
                                             </div>
                                         </div>
                                     </div>
@@ -31,22 +31,31 @@
                                         <label class="col-sm-3 col-form-label text-label">库存</label>
                                         <div class="col-sm-9">
                                             <div class="input-group mb-3">
-                                                <input type="text" class="form-control" name="stock"
-                                                       value="100" readonly="readonly">
+                                                <input type="text" class="form-control" name="stockAll"
+                                                       value="" readonly="readonly">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="input-group row mb-5">
+                                        <label class="col-sm-3 col-form-label text-label">当前库存</label>
+                                        <div class="col-sm-9">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" name="stock"
+                                                       value="" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group row mb-5" id="ttl">
                                         <label class="col-sm-3 col-form-label text-label">秒杀时限</label>
                                         <div class="col-sm-9">
                                             <div class="input-group mb-3">
                                                 <div class="input-group-prepend">
                                                         <span class="input-group-text">
                                                             <span class="form-check custom-position">
-                                                                <input id="ten" class="form-check-input"
-                                                                       type="radio" name="ttl" value="10">
+                                                                <input id="second" class="form-check-input"
+                                                                       type="radio" name="ttl" value="10" checked>
                                                                 <label class="pl-3 form-check-label"
-                                                                       for="ten"></label>
+                                                                       for="second"></label>
                                                             </span>
                                                         </span>
                                                 </div>
@@ -54,36 +63,75 @@
                                                 <div class="input-group-prepend">
                                                         <span class="input-group-text">
                                                             <span class="form-check custom-position">
-                                                                <input id="twentry" class="form-check-input"
-                                                                       type="radio" name="ttl" value="20">
+                                                                <input id="minute" class="form-check-input"
+                                                                       type="radio" name="ttl" value="60">
                                                                 <label class="pl-3 form-check-label"
-                                                                       for="twentry"></label>
+                                                                       for="minute"></label>
                                                             </span>
                                                         </span>
                                                 </div>
-                                                <input type="text" class="form-control" value="20s" readonly="readonly">
+                                                <input type="text" class="form-control" value="1min"
+                                                       readonly="readonly">
                                                 <div class="input-group-prepend">
                                                         <span class="input-group-text">
                                                             <span class="form-check custom-position">
-                                                                <input id="thirty" class="form-check-input"
-                                                                       type="radio" name="ttl" value="30">
+                                                                <input id="hour" class="form-check-input"
+                                                                       type="radio" name="ttl" value="3600">
                                                                 <label class="pl-3 form-check-label"
-                                                                       for="thirty"></label>
+                                                                       for="hour"></label>
                                                             </span>
                                                         </span>
                                                 </div>
-                                                <input type="text" class="form-control" value="30s" readonly="readonly">
+                                                <input type="text" class="form-control" value="1hour"
+                                                       readonly="readonly">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="input-group row" >
+                                    <div class="input-group row mb-5">
+                                        <label class="col-sm-3 col-form-label text-label">当前时间</label>
+                                        <div class="col-sm-9">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" name="nowTime"
+                                                       readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group row mb-5">
                                         <label class="col-sm-3 col-form-label text-label">秒杀操作</label>
                                         <div class="col-sm-9">
-                                            <div class="input-group mb-3"  >
+                                            <div class="input-group mb-3">
                                                 <div class="input-group-prepend" style="margin: 0 auto;">
                                                     <button class="btn btn-primary btn-flat" type="button"
-                                                            id="button-addon1">开始秒杀</button>
+                                                            id="spike">开启秒杀
+                                                    </button>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group row mb-5" id="start">
+                                        <label class="col-sm-3 col-form-label text-label">秒杀开始时间</label>
+                                        <div class="col-sm-9">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" name="startTime"
+                                                       readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group row mb-5" id="end">
+                                        <label class="col-sm-3 col-form-label text-label">秒杀预结束时间</label>
+                                        <div class="col-sm-9">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" name="endTime"
+                                                       readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group row mb-5" id="timeLimit">
+                                        <label class="col-sm-3 col-form-label text-label">秒杀剩余时间</label>
+                                        <div class="col-sm-9">
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" name="timeLimit"
+                                                       readonly="readonly">
                                             </div>
                                         </div>
                                     </div>
@@ -117,5 +165,119 @@
 
 <script src="main/js/plugins-init/datamap-usa-init.js"></script>
 <script src="main/js/jquery-3.4.1.min.js"></script>
+<script>
+    $(function () {
+        var url = window.location.href;
+        window.href=window.location.href;
+        var regex = /.*\?(.*)/;
+        var groups = url.match(regex);
+        var queryStr = groups[1];
+        window.goodsId = queryStr.split("=")[1];
+        //根据goodsId获取goods
+        $.ajax({
+            url: '/spike-goods/getSpikeGoods/' + goodsId,
+            method: 'get',
+            success: function (data) {
+                console.log(data);
+                var goodsName = $("input[name='goodsName']");
+                goodsName.val(data.goodsName);
+                var stockAll = $("input[name='stockAll']");
+                stockAll.val(data.stockAll);
+                var stock = $("input[name='stock']");
+                stock.val(data.stock);
+                var startTime = $("input[name='startTime']");
+                startTime.val(data.startTime);
+                var endTime = $("input[name='endTime']");
+                endTime.val(data.endTime);
+                window.status=data.status;
+                if (data.status == 0) {
+                    //秒杀未开始
+                    $("#start").hide();
+                    $("#end").hide();
+                    $("#timeLimit").hide();
+                }
+                if (data.status == 1) {
+                    //秒杀正在进行
+                    $("#spike").text("秒杀进行中");
+                    var timeLimit = $("input[name='timeLimit']");
+                    timeLimit.val(data.timeLimit);
+                    $("#ttl").hide();
+                    //定时器刷新剩余时间
+                    startTimeLimitTimer( );
+                }
+                if(data.status==2){
+                    $("#spike").text("查看秒杀结果");
+                    $("#start").hide();
+                    $("#end").hide();
+                    $("#timeLimit").hide();
+                    $("#ttl").hide();
+                }
+                if (data.stock == 0) {
+                    //库存为0
+                    $("#spike").text("商品已售完");
+                    $("#ttl").hide();
+                    $("#timeLimit").hide();
+                }
+            }
+        });
+    });
+    //定时器
+    $(function () {
+        var timer = setInterval(function () {
+            var curr = $('input[name="nowTime"]');
+            curr.attr('value', getFormatDate());
+        }, 1000);
+    });
+
+    function getFormatDate(  ) {
+        var nowDate = new Date();
+        var year = nowDate.getFullYear();
+        var month = nowDate.getMonth() + 1;
+        month = month < 10 ? "0" + month : month;
+        var date = nowDate.getDate();
+        date = date < 10 ? "0" + date : date;
+        var hour = nowDate.getHours();
+        hour = hour < 10 ? "0" + hour : hour;
+        var minute = nowDate.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = nowDate.getSeconds();
+        second = second < 10 ? "0" + second : second;
+        return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
+    }
+
+    function startTimeLimitTimer( ) {
+        var anotherTimer = setInterval(function () {
+            var timeLimit = $("input[name='timeLimit']");
+            var val=timeLimit.val();
+            if(val>0){
+                timeLimit.val(timeLimit.val() - 1);
+            }else{
+                timeLimit.val(0);
+                window.location.href='/';
+            }
+        }, 1000);
+    }
+    $(function () {
+        $("#spike").on('click',function () {
+            if(window.status==0){
+                //开启秒杀
+                var spikeGoodsId=window.goodsId;
+                var ttl=$("input[name='ttl']:checked").val();
+                $.ajax({
+                    url:'/openSpike',
+                    data:{
+                        spikeGoodsId:spikeGoodsId,
+                        ttl:ttl
+                    },
+                    method:'Post',
+                    success:function (data) {
+                        alert("秒杀已开启！");
+                        window.location.href='/';
+                    }
+                })
+            }
+        });
+    })
+</script>
 </body>
 </html>
