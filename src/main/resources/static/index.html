@@ -67,7 +67,15 @@
 <script src="main/js/jquery-3.4.1.min.js"></script>
 <script>
     $(function () {
+        window.click = false;
         var tbody = $("table tbody");
+        $.ajax({
+            url: '/token',
+            method: 'GET',
+            success: function (data) {
+                window.token = data;
+            }
+        });
         $.ajax({
             url: '/spike-goods/getAll',
             method: 'get',
@@ -78,16 +86,16 @@
                     var $tr = $("<tr></tr>");
                     var $td_idx = $("<td>" + (index + 1) + "</td>");
                     var $td_goodsName = $("<td>" + value.goodsName + "</td>");
-                    var startTime=value.startTime==null?'-':value.startTime;
+                    var startTime = value.startTime == null ? '-' : value.startTime;
                     var $td_startTime = $("<td>" + startTime + "</td>");
-                    var endTime=value.endTime==null?'-':value.endTime;
-                    var $td_endTime = $("<td>" +endTime + "</td>");
-                    var timeLimit=value.timeLimit==null?'-':value.timeLimit;
-                    var $td_timeLimit = $("<td class='ttl'>" + timeLimit+ "</td>");
+                    var endTime = value.endTime == null ? '-' : value.endTime;
+                    var $td_endTime = $("<td>" + endTime + "</td>");
+                    var timeLimit = value.timeLimit == null ? '-' : value.timeLimit;
+                    var $td_timeLimit = $("<td class='ttl'>" + timeLimit + "</td>");
                     var $td_stock = $("<td>" + value.stock + "</td>");
                     var $td_stock_all = $("<td>" + value.stockAll + "</td>");
                     var $td_operate = $("<td><span class='label label-xl label-rounded label-warning management' gId='" + value.goodsId + "'>秒杀管理</span></td>")
-                    var $td_spike=$("<td><span class='label label-xl label-rounded label-danger spike' gId='" + value.goodsId + "'>秒杀</span>");
+                    var $td_spike = $("<td><span class='label label-xl label-rounded label-danger spike' gId='" + value.goodsId + "'>秒杀</span>");
                     $tr.append($td_idx);
                     $tr.append($td_goodsName);
                     $tr.append($td_startTime);
@@ -96,9 +104,9 @@
                     $tr.append($td_stock);
                     $tr.append($td_stock_all);
                     $tr.append($td_operate);
-                    if(value.status==1){
+                    if (value.status == 1) {
                         $tr.append($td_spike);
-                    }else{
+                    } else {
                         $td_spike.text("-");
                         $tr.append($td_spike);
                     }
@@ -109,9 +117,9 @@
                         $.each(ttls, function (idx, val) {
                             var ttl = $(val).text();
                             if (!isNaN(ttl)) {
-                                if(ttl>0){
+                                if (ttl > 0) {
                                     $(val).text(parseInt(ttl) - 1);
-                                }else{
+                                } else {
                                     $(val).text(0);
                                 }
                             }
@@ -125,8 +133,24 @@
         var gid = $(this).attr('gid');
         window.location.href = "/spike.html?goodsId=" + gid;
     });
-    $(document).delegate('.spike','click',function () {
+    $(document).delegate('.spike', 'click', function () {
+        //接口防刷
+        var token = window.token;
+        var gid = $(this).attr('gid');
+        if (!window.click) {
+            $.ajax({
+                url: '/spike?goodsId=' + gid + '&token=' + token,
+                method: 'post',
+                success: function (data) {
+                    alert(data);
+                    window.location.href = '/';
+                }
+            });
+        }else{
+            alert("多次操作");
+        }
 
+        window.click = true;
     });
 </script>
 </body>

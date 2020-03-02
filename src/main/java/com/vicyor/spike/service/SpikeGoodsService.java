@@ -9,11 +9,13 @@ import java.util.List;
  * 时间:2020/2/28 10:48
  **/
 public interface SpikeGoodsService {
-     List<SpikeGoods>getAllSpikeGoods();
+    List<SpikeGoods> getAllSpikeGoods();
 
-    SpikeGoods getSpikeGoodsBySpikeGoodsId(Long  spikeGoodsId);
+    SpikeGoods getSpikeGoodsBySpikeGoodsId(Long spikeGoodsId);
 
-    void openSpike(Long goodsId,Long ttl);
+    void openSpike(Long goodsId, Long ttl);
 
     void finishSpike(Long spikeGoodsId);
+
+    void decrementSpikeGoodsStocks(Long spikeGoodsId);
 }

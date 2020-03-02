@@ -31,4 +31,5 @@ public class SpikeGoodsController {
     public SpikeGoods getSpikeGoods(@PathVariable("spikeGoodsId")Long spikeGoodsId){
         return spikeGoodsService.getSpikeGoodsBySpikeGoodsId(spikeGoodsId);
     }
+
 }

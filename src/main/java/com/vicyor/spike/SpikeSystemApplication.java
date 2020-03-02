@@ -3,6 +3,7 @@ package com.vicyor.spike;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 作者:姚克威
@@ -20,6 +21,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  **/
 @SpringBootApplication
 @EnableJpaRepositories
+@EnableTransactionManagement
 public class SpikeSystemApplication {
     public static void main(String[] args) {
         //启动项目

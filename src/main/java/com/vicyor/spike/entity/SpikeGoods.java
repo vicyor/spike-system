@@ -19,7 +19,7 @@ public class SpikeGoods {
     @Column(name = "goods_name")
     private String goodsName;
     @Column(name = "stock")
-    private Long stock;
+    private long stock;
     @Column(name = "start_time")
     //spring mvc的HttpMessageConverter->ObjectMapper 对入参和返回参数进行json的转化
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
