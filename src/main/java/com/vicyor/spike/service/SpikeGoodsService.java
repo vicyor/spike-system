@@ -18,4 +18,9 @@ public interface SpikeGoodsService {
     void finishSpike(Long spikeGoodsId);
 
     void decrementSpikeGoodsStocks(Long spikeGoodsId);
+
+    void saveSpikeGoods(SpikeGoods goods);
+
+
+    void resetAll();
 }

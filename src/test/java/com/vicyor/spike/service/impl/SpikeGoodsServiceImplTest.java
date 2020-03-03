@@ -81,4 +81,13 @@ public class SpikeGoodsServiceImplTest {
         Set<String> keys = redisTemplate.keys("*");
         keys.forEach(key->redisTemplate.delete(key));
     }
+    @Test
+    public void testMysqlDB(){
+        SpikeGoods goods=new SpikeGoods();
+        goods.setGoodsId(1l);
+        goods.setStock(10);
+        goods.setStockAll(10l);
+        goods.setGoodsName("恰恰瓜子");
+        spikeGoodsService.saveSpikeGoods(goods);
+    }
 }

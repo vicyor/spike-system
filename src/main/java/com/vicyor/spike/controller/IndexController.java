@@ -2,7 +2,9 @@ package com.vicyor.spike.controller;
 
 import com.vicyor.spike.entity.SpikeGoods;
 import com.vicyor.spike.service.SpikeGoodsService;
+import com.vicyor.spike.service.SpikeOrderService;
 import com.vicyor.spike.task.FinishSpikeGoodsTask;
+import com.vicyor.spike.task.GenerateOrdersTask;
 import com.vicyor.spike.task.StockDecrementTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 作者:姚克威
@@ -73,6 +76,7 @@ public class IndexController {
             HashMap map = redisTemplate.execute(new SessionCallback<HashMap>() {
                 @Override
                 public HashMap execute(RedisOperations operations) throws DataAccessException {
+
                     HashMap<String, Object> map = new HashMap<>();
                     //key ->  goodsId-list-startTime
                     String key = goodsId + "-" + "list" + "-" + spikeGoods.getStartTime().getTime();
@@ -86,6 +90,10 @@ public class IndexController {
                     map.put("count", count);
                     Long expire = operations.getExpire(("id=" + goodsId));
                     map.put("ttl", expire);
+                    //将订单也放入到redis中
+                    operations
+                            .opsForValue()
+                            .set("order-"+goodsId+"-"+value,"100RMB",15*60, TimeUnit.SECONDS);
                     return map;
                 }
             });
@@ -102,11 +110,19 @@ public class IndexController {
                 result = "恭喜你,你是第" + (spikeGoods.getStockAll() - count) + "个幸运用户";
                 //异步执行减库存任务
                 threadPool.execute(new StockDecrementTask(goodsId, spikeGoodsService));
+                //异步执行下订单操作
+                threadPool.execute(new GenerateOrdersTask(session.getId(),goodsId,0,spikeOrderService));
             }
         }
         return result;
     }
-
+    @Autowired
+    SpikeOrderService spikeOrderService;
     @Autowired
     ExecutorService threadPool;
+    @PostMapping("/reset")
+    @ResponseBody
+    public void resetSytem(){
+        spikeGoodsService.resetAll();
+    }
 }

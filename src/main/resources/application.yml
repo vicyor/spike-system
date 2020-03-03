@@ -5,6 +5,8 @@ spring:
     url: jdbc:mysql://106.13.74.154:3306/spike_system?serverTimeZone=GMT+8
     username: root
     password: vicyor123456
+    hikari:
+      auto-commit: true
   jpa:
     show-sql: true
     hibernate:
@@ -20,6 +22,6 @@ spring:
     jedis:
       pool:
         max-active: 8
-        max-wait: -1
+        max-wait: -1 #获取不到连接等待时间(指连接池中连接都忙了)
         max-idle: 8
         min-idle: 0

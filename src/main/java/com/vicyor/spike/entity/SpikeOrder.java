@@ -2,10 +2,7 @@ package com.vicyor.spike.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -17,11 +14,13 @@ import java.sql.Timestamp;
 @Table(name = "spike_order",schema = "spike_system")
 public class SpikeOrder {
     @Id
+    //设置自增
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
     @Column(name = "state")
-    private Long state;
+    private int state;
     @Column(name = "goods_id")
     private Long goodsId;
     @Column(name = "create_time")

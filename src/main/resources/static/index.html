@@ -40,6 +40,7 @@
                         </div>
                     </div>
                 </div>
+                <button type="submit" class="btn btn-primary btn-form mr-2 reset">Resetting</button>
             </div>
         </div>
     </div>
@@ -91,6 +92,9 @@
                     var endTime = value.endTime == null ? '-' : value.endTime;
                     var $td_endTime = $("<td>" + endTime + "</td>");
                     var timeLimit = value.timeLimit == null ? '-' : value.timeLimit;
+                    if (timeLimit != null) {
+                        if (timeLimit <= 0) timeLimit = '-';
+                    }
                     var $td_timeLimit = $("<td class='ttl'>" + timeLimit + "</td>");
                     var $td_stock = $("<td>" + value.stock + "</td>");
                     var $td_stock_all = $("<td>" + value.stockAll + "</td>");
@@ -146,12 +150,21 @@
                     window.location.href = '/';
                 }
             });
-        }else{
+        } else {
             alert("多次操作");
         }
 
         window.click = true;
     });
+    $(".reset").on('click',function () {
+        $.ajax({
+            url:'/reset',
+            method:'POST',
+            success:function (data) {
+                window.location.href='/';
+            }
+        })
+    })
 </script>
 </body>
 </html>

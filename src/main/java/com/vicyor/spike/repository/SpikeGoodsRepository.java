@@ -9,4 +9,5 @@ public interface SpikeGoodsRepository extends JpaRepository<SpikeGoods,Long> {
     @Modifying(clearAutomatically = true)
     @Query(value = "update spike_goods set stock=stock-1 where goods_id=?1",nativeQuery = true)
     int decrementStockBySpikeGoodsId(Long id);
+
 }

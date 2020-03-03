@@ -84,7 +84,7 @@ public class SpikeGoodsServiceImpl implements SpikeGoodsService {
         Optional<SpikeGoods> optional = repository.findById(spikeGoodsId);
         optional.ifPresent(spikeGoods -> {
             spikeGoods.setStatus(2);
-
+            spikeGoods.setEndTime(new Timestamp(System.currentTimeMillis()));
             repository.save(spikeGoods);
         });
     }
@@ -97,5 +97,20 @@ public class SpikeGoodsServiceImpl implements SpikeGoodsService {
         //先获取再修改即使开了事务在rr下也没办法解决安全性.
         //rr不是当前读.....
         repository.decrementStockBySpikeGoodsId(spikeGoodsId);
+    }
+
+    @Override
+    public void saveSpikeGoods(SpikeGoods goods) {
+        repository.save(goods);
+    }
+
+    @Override
+    public void resetAll() {
+        SpikeGoods spikeGoods=new SpikeGoods();
+        spikeGoods.setGoodsId(1l);
+        spikeGoods.setStock(10);
+        spikeGoods.setStockAll(10l);
+        spikeGoods.setGoodsName("恰恰瓜子");
+        repository.save(spikeGoods);
     }
 }
