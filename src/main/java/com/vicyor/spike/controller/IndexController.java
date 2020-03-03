@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,15 +50,18 @@ public class IndexController {
     @ResponseBody
     public String getToken(HttpSession session) {
         String digestStr = "";
-        digestStr = updateToken(session );
+        digestStr = updateToken(session);
         return digestStr;
     }
 
-    private String updateToken(HttpSession session ) {
-        byte[] digest = Base64.getEncoder().encode(( System.currentTimeMillis()+"").getBytes());
+    private String updateToken(HttpSession session) {
+        byte[] digest = Base64.getEncoder().encode((System.currentTimeMillis() + "").getBytes());
         session.setAttribute("token", new String(digest));
         return session.getAttribute("token").toString();
     }
+
+    //通过信号量限流
+    private Semaphore semaphore = new Semaphore(100);
 
     @PostMapping("/spike")
     @ResponseBody
@@ -66,63 +70,72 @@ public class IndexController {
                         HttpSession session
     ) {
         String result = "";
-        String sessionToken = session.getAttribute("token").toString();
-        SpikeGoods spikeGoods = spikeGoodsService.getSpikeGoodsBySpikeGoodsId(goodsId);
-        if (!sessionToken.equals(token)) {
-            result = "操作错误";
-        } else {
-            //更新token
-            updateToken(session);
-            HashMap map = redisTemplate.execute(new SessionCallback<HashMap>() {
-                @Override
-                public HashMap execute(RedisOperations operations) throws DataAccessException {
-
-                    HashMap<String, Object> map = new HashMap<>();
-                    //key ->  goodsId-list-startTime
-                    String key = goodsId + "-" + "list" + "-" + spikeGoods.getStartTime().getTime();
-                    //value ->sessionId
-                    String value = session.getId();
-                    //lpush key value
-                    operations.opsForList().leftPush(key, value);
-                    //incr
-                    key = "id=" + goodsId;
-                    Long count = operations.opsForValue().increment(key, Integer.valueOf(-1));
-                    map.put("count", count);
-                    Long expire = operations.getExpire(("id=" + goodsId));
-                    map.put("ttl", expire);
-                    //将订单也放入到redis中
-                    operations
-                            .opsForValue()
-                            .set("order-"+goodsId+"-"+value,"100RMB",15*60, TimeUnit.SECONDS);
-                    return map;
-                }
-            });
-            Long count= (Long) map.get("count");
-            Long ttl= (Long) map.get("ttl");
-            if (count< 0) {
-                if (ttl <= 0) {
-                    result = "很抱歉，活动已结束";
-                } else {
-                    result = "很抱歉，商品已售空";
-                    threadPool.execute(new FinishSpikeGoodsTask(spikeGoodsService, goodsId));
-                }
+        try {
+            semaphore.acquire();
+            String sessionToken = session.getAttribute("token").toString();
+            SpikeGoods spikeGoods = spikeGoodsService.getSpikeGoodsBySpikeGoodsId(goodsId);
+            if (!sessionToken.equals(token)) {
+                result = "操作错误";
             } else {
-                result = "恭喜你,你是第" + (spikeGoods.getStockAll() - count) + "个幸运用户";
-                //异步执行减库存任务
-                threadPool.execute(new StockDecrementTask(goodsId, spikeGoodsService));
-                //异步执行下订单操作
-                threadPool.execute(new GenerateOrdersTask(session.getId(),goodsId,0,spikeOrderService));
+                //更新token
+                updateToken(session);
+                HashMap map = redisTemplate.execute(new SessionCallback<HashMap>() {
+                    @Override
+                    public HashMap execute(RedisOperations operations) throws DataAccessException {
+
+                        HashMap<String, Object> map = new HashMap<>();
+                        //key ->  goodsId-list-startTime
+                        String key = goodsId + "-" + "list" + "-" + spikeGoods.getStartTime().getTime();
+                        //value ->sessionId
+                        String value = session.getId();
+                        //lpush key value
+                        operations.opsForList().leftPush(key, value);
+                        //incr
+                        key = "id=" + goodsId;
+                        Long count = operations.opsForValue().increment(key, Integer.valueOf(-1));
+                        map.put("count", count);
+                        Long expire = operations.getExpire(("id=" + goodsId));
+                        map.put("ttl", expire);
+                        //将订单也放入到redis中
+                        operations
+                                .opsForValue()
+                                .set("order-" + goodsId + "-" + value, "100RMB", 15 * 60, TimeUnit.SECONDS);
+                        return map;
+                    }
+                });
+                Long count = (Long) map.get("count");
+                Long ttl = (Long) map.get("ttl");
+                if (count < 0) {
+                    if (ttl <= 0) {
+                        result = "很抱歉，活动已结束";
+                    } else {
+                        result = "很抱歉，商品已售空";
+                        threadPool.execute(new FinishSpikeGoodsTask(spikeGoodsService, goodsId));
+                    }
+                } else {
+                    result = "恭喜你,你是第" + (spikeGoods.getStockAll() - count) + "个幸运用户";
+                    //异步执行减库存任务
+                    threadPool.execute(new StockDecrementTask(goodsId, spikeGoodsService));
+                    //异步执行下订单操作
+                    threadPool.execute(new GenerateOrdersTask(session.getId(), goodsId, 0, spikeOrderService));
+                }
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }finally {
+            semaphore.release();
         }
         return result;
     }
+
     @Autowired
     SpikeOrderService spikeOrderService;
     @Autowired
     ExecutorService threadPool;
+
     @PostMapping("/reset")
     @ResponseBody
-    public void resetSytem(){
+    public void resetSytem() {
         spikeGoodsService.resetAll();
     }
 }

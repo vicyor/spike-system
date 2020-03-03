@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *  4s秒后
  *   lrange goods_1 0 100 可以获取秒杀的用户结果
  *   可以通过semaphore控制流量
+ *   订单也可以设置过期策略.
  **/
 @SpringBootApplication
 @EnableJpaRepositories
